@@ -281,14 +281,11 @@ async function verificarDisponibilidad(
       reiniciarTemporizador(ctx, gotoFlow, TIMEOUT_MS);
 
       // No hacer gotoFlow, simplemente retornar para que el flujo principal capture la respuesta
-      return;
+   
     }
 
     // No hay horarios disponibles
-    const mensaje =
-      `El horario "${formatearFechaHora(startTime)}" ya está ocupado.\n\n` +
-      `😔 No encontré horarios disponibles en los próximos 14 días.\n` +
-      `Por favor, intenta con una fecha diferente.`;
+    const mensaje = `Por favor, intenta con una fecha diferente.`;
 
     await responderConAnimacion(provider, ctx, mensaje);
 
@@ -472,7 +469,7 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
   })
 
   // Paso 2: Captura y procesamiento del mensaje
-  .addAnswer('Por favor, indícame la fecha y hora que deseas para tu cita', { capture: true }, async (ctx, { provider, state, gotoFlow, fallBack }) => {
+  .addAnswer('Por favor, indica ( mañana, tarde, noche ó am,pm a su hora)', { capture: true }, async (ctx, { provider, state, gotoFlow, fallBack }) => {
     await detenerTemporizador(ctx);
 
     let mensaje = '';
