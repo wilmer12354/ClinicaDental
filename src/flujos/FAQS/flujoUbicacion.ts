@@ -67,9 +67,7 @@ export const flujoUbicacion = addKeyword(EVENTS.ACTION)
                 respuesta: `${mensaje1}\n[Imagen y mapa enviados]\n${mensaje2}\n[Imagen y mapa enviados]\n${mensajePregunta}`,
                 fecha: new Date()
             });
-        } else {
-            
-        }
+        } 
 
         await state.update({ esperandoDecisionUbicacion: true });
     })

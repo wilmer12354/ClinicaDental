@@ -47,9 +47,7 @@ export const flujoHorario = addKeyword(EVENTS.ACTION)
                 respuesta: `${mensaje1}\n${mensaje2}\n${mensaje3}`,
                 fecha: new Date()
             });
-        } else {
-            
-        }
+        } 
 
         await state.clear();
     })

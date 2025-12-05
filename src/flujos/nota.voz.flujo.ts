@@ -37,7 +37,7 @@ export const flujoNotasDeVoz = addKeyword(EVENTS.VOICE_NOTE)
                     audio = archivoGuardado;
                 }
             } catch (error1) {
-            
+                // mensaje error
             }
 
             if (!buffer || buffer.length === 0) {

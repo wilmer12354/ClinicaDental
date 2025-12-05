@@ -26,9 +26,9 @@ class ListaNegraPersistente {
         const data = fs.readFileSync(ARCHIVO_LISTA_NEGRA, 'utf-8');
         const numeros = JSON.parse(data) as string[];
         this.LN_numeros = new Set(numeros);
-      } else {
-      }
+      } 
     } catch (error) {
+      console.error('Error al cargar lista negra:', error);
     }
   }
 
@@ -43,6 +43,7 @@ private guardarEnArchivo(): void {
     // Verificar que se guardó
     const verificar = fs.readFileSync(ARCHIVO_LISTA_NEGRA, 'utf-8');
   } catch (error) {
+    console.error('Error al guardar lista negra:', error);
   }
 }
 

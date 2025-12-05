@@ -70,6 +70,15 @@ class GestorMensajes {
             { texto: 'Excelente {nombre} 👍', variables: ['nombre'] }
         ]);
 
+        this.agregar('confirmar_cita', 'pedir_puntualidad', [
+            { texto: 'Perfecto {nombre}, tu cita está confirmada. Recuerda: cancela 1 hora antes sí o sí. ¡Te esperamos! 😊', variables: ['nombre'] },
+            { texto: 'Listo {nombre}, cita agendada. Es importante cancelar 1 hora antes si no puedes venir. ¡Te esperamos! 👍', variables: ['nombre'] },
+            { texto: 'Hola {nombre}, tu cita quedó registrada. Cancela 1 hora antes sí o sí si no puedes asistir. ¡Nos vemos pronto! 🕒', variables: ['nombre'] },
+            { texto: 'Gracias {nombre}, tu cita está confirmada. No olvides cancelar 1 hora antes si no vienes. ¡Te esperamos! 🌟', variables: ['nombre'] },
+            { texto: '¡Genial {nombre}! Tu cita está lista. Cancela sí o sí 1 hora antes si es necesario. ¡Nos vemos! 😊', variables: ['nombre'] },
+        ]);
+
+
         // === FLUJO: UBICACIÓN ===
         this.agregar('ubicacion', 'mostrar', [
             { texto: '📍 Estamos ubicados en:' },

@@ -55,8 +55,6 @@ const detectarIntencion = addKeyword(EVENTS.ACTION)
       if (intencion) {
         
         return enviarAlFlujo(intencion, gotoFlow)
-      } else {
-       
       }
 
       // Si no coincide con keywords, usar IA

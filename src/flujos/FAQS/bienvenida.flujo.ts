@@ -47,9 +47,7 @@ export const bienvenidaFlujo = addKeyword(EVENTS.ACTION)
                 respuesta: `${mensajeSaludo}`,
                 fecha: new Date()
             });
-            } else {
-                
-            }
+            } 
             await responderConAnimacion(provider, ctx, mensajeSaludo);
         } catch (error) {
             console.error('❌ Error al buscar paciente:', error);

@@ -46,8 +46,7 @@ function detectarIntencionPorFuse(message: string): string | null {
     if (score < 0.5) {
       return bestMatch.item.intention;
     }
-  } else {
-  }
+  } 
 
   // 🔥 ESTRATEGIA ALTERNATIVA: Buscar palabras clave individuales
   // Si Fuse no encuentra match, buscar keywords simples en el mensaje

@@ -508,7 +508,7 @@ export const socketOperations = async (
 
        
     } catch (error) {
-        
+        console.error('❌ [SOCKET] Error al realizar operaciones:', error);
         throw error;
     }
 };

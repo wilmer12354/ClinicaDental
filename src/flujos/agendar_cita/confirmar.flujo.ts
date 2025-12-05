@@ -3,6 +3,8 @@
 import { addKeyword, EVENTS } from '@builderbot/bot';
 import { agendarCita } from '../../servicios/googleCalendar';
 import { responderConAnimacion } from '../../utilidades/chatUX';
+import { instanciaAdaptadorMongo } from '../../bd/adaptadorMongo';
+import { obtenerMensaje } from '~/utilidades/mensajesDiferentes';
 
 export const flujoConfirmar = addKeyword(EVENTS.ACTION)
     .addAction(async (ctx, { provider, flowDynamic, state }) => {
@@ -17,7 +19,7 @@ export const flujoConfirmar = addKeyword(EVENTS.ACTION)
                 
 
                 await flowDynamic([
-                    'Error viendo state'
+                    'Indique este error al médico porfavor'
                 ]);
                 await state.clear();
                 return;
@@ -42,7 +44,11 @@ export const flujoConfirmar = addKeyword(EVENTS.ACTION)
                 const respuesta = await agendarCita(datosReserva);
 
                 if (respuesta.success) {
-                    await responderConAnimacion(provider, ctx, "¡Cita creada exitosamente!");
+                    const numeroPaciente = (ctx.key?.remoteJid || ctx.from).split('@')[0];
+                    const paciente = await instanciaAdaptadorMongo.buscarPacientePorNumero(numeroPaciente);
+                    const nombrePaciente = paciente.nombre;
+                    const mensaje = obtenerMensaje('confirmar_cita', 'pedir_puntualidad', { nombre: nombrePaciente });
+                    await responderConAnimacion(provider, ctx, mensaje);
                     await state.clear();
                     return;
                 }
