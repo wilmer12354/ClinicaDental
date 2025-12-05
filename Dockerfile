@@ -1,40 +1,44 @@
-# Image size ~ 400MB
+# Builder
 FROM node:21-alpine3.18 as builder
-
 WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 ENV PNPM_HOME=/usr/local/bin
 
-COPY . .
-
-COPY package*.json *-lock.yaml ./
+# Copiamos solo lo necesario para instalar deps
+COPY package*.json pnpm-lock.yaml* ./
 
 RUN apk add --no-cache --virtual .gyp \
-        python3 \
-        make \
-        g++ \
-    && apk add --no-cache git \
-    && pnpm install && pnpm run build \
+        python3 make g++ \
+    && pnpm install --frozen-lockfile \
     && apk del .gyp
 
-FROM node:21-alpine3.18 as deploy
+# Ahora copiamos el código
+COPY . .
 
+RUN pnpm run build
+
+
+# Deploy
+FROM node:21-alpine3.18 as deploy
 WORKDIR /app
 
 ARG PORT
-ENV PORT $PORT
+ENV PORT=$PORT
 EXPOSE $PORT
 
-COPY --from=builder /app/assets ./assets
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/*.json /app/*-lock.yaml ./
-
-RUN corepack enable && corepack prepare pnpm@latest --activate 
+RUN corepack enable && corepack prepare pnpm@latest --activate
 ENV PNPM_HOME=/usr/local/bin
 
-RUN npm cache clean --force && pnpm install --production --ignore-scripts \
-    && addgroup -g 1001 -S nodejs && adduser -S -u 1001 nodejs \
+# Copiamos solo lo necesario para producción
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/assets ./assets
+COPY package*.json pnpm-lock.yaml* ./
+
+RUN pnpm install --prod --ignore-scripts \
+    && addgroup -g 1001 -S nodejs \
+    && adduser -S -u 1001 nodejs \
     && rm -rf $PNPM_HOME/.npm $PNPM_HOME/.node-gyp
 
-CMD ["npm", "start"]
+USER nodejs
+CMD ["node", "dist/app.js"]
