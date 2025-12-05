@@ -40,9 +40,7 @@ function reiniciarTemporizador(colaUsuario: ColaUsuario): ColaUsuario {
 }
 
 function procesarCola(mensajes: Mensaje[]): string {
-    const resultado = mensajes.map(mensaje => mensaje.texto).join(" ");
-    console.log('Mensajes acumulados:', resultado);
-    return resultado;
+    return mensajes.map(mensaje => mensaje.texto).join(" ");
 }
 
 function crearColaMensajes(config: ConfiguracionCola) {
@@ -62,15 +60,13 @@ function crearColaMensajes(config: ConfiguracionCola) {
             const socket = proveedor.vendor;
             await socket.readMessages([claveMensaje]);
         } catch (err) {
-            console.error('❌ Error al marcar mensaje como leído:', err);
+            // Error al marcar mensaje como leído
         }
 
         if (!de || !cuerpoMensaje) {
-            console.error('Contexto de mensaje inválido:', ctx);
-            return;
+            return; // Contexto de mensaje inválido
         }
 
-        console.log('Encolando:', cuerpoMensaje, 'de:', de);
 
         let colaUsuario = estado.colas.get(de);
         if (!colaUsuario) {
@@ -82,7 +78,6 @@ function crearColaMensajes(config: ConfiguracionCola) {
         colaUsuario.mensajes.push({ texto: cuerpoMensaje, timestamp: Date.now() });
         colaUsuario.callback = callback;
 
-        console.log('Mensajes de', de, ':', colaUsuario.mensajes);
 
         if (!colaUsuario.temporizador) {
             colaUsuario.temporizador = setTimeout(() => {

@@ -48,7 +48,7 @@ export const bienvenidaFlujo = addKeyword(EVENTS.ACTION)
                 fecha: new Date()
             });
             } else {
-                console.log(`⏭️ No se guarda en historial - Intención repetida: ${ultimaIntencion}`);
+                
             }
             await responderConAnimacion(provider, ctx, mensajeSaludo);
         } catch (error) {
@@ -99,7 +99,6 @@ export const flujoRegistro = addKeyword(EVENTS.ACTION)
         // Formatear el nombre correctamente (Primera letra mayúscula)
         const nombreFormateado = formatearNombre(nombreIngresado);
         
-        console.log('Mensaje acumulado llegado de bienvenida:', state.get('mensajeAcumulado'))
         
         // Guardar en la base de datos con nombre formateado
         await instanciaAdaptadorMongo.agregarOActualizarPaciente({

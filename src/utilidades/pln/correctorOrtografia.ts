@@ -39,7 +39,7 @@ export async function corregirOrtografia(texto: string): Promise<string> {
 
     return textoCorregido;
   } catch (error) {
-    console.error('❌ Error al corregir ortografía:', error);
-    return texto; // Devolver original si falla
+    // Silently return original text on error
+    return texto;
   }
 }

@@ -20,7 +20,7 @@ export const flujoNotasDeVoz = addKeyword(EVENTS.VOICE_NOTE)
             const directorioTmp = path.join(process.cwd(), 'tmp');
             if (!fs.existsSync(directorioTmp)) {
                 fs.mkdirSync(directorioTmp, { recursive: true });
-                console.log('📁 Directorio tmp creado');
+                
             }
 
             audio = path.join(directorioTmp, `audio_${Date.now()}.ogg`);
@@ -37,7 +37,7 @@ export const flujoNotasDeVoz = addKeyword(EVENTS.VOICE_NOTE)
                     audio = archivoGuardado;
                 }
             } catch (error1) {
-                console.log('ERROR al guardar archivo: ', error1.message);
+            
             }
 
             if (!buffer || buffer.length === 0) {
@@ -50,9 +50,9 @@ export const flujoNotasDeVoz = addKeyword(EVENTS.VOICE_NOTE)
             }
 
             // Transcribir el audio
-            console.log('🤖 Transcribiendo tu mensaje...');
+            
             const transcripcion = await transcribeAudio(audio);
-            console.log('📝 Transcripción exitosa:', transcripcion);
+           
 
             if (!transcripcion || transcripcion.trim().length === 0) {
                 throw new Error('La transcripción está vacía');

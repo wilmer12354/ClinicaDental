@@ -102,7 +102,6 @@ const convertirNumerosEscritos = (texto: string): string => {
   // Detectar y convertir "mediodía" o "medio día" a "12:00"
   const mediodiaRegex = /\b(medio\s*d[ií]a|mediod[ií]a)\b/gi;
   if (mediodiaRegex.test(textoLower)) {
-    console.log(`🕐 Convirtiendo mediodía a 12:00`);
     resultado = resultado.replace(mediodiaRegex, '12:00');
   }
   
@@ -111,7 +110,6 @@ const convertirNumerosEscritos = (texto: string): string => {
     // Usar regex con límites de palabra para reemplazar solo palabras completas
     const regex = new RegExp(`\\b${numeroEscrito}\\b`, 'gi');
     if (regex.test(textoLower)) {
-      console.log(`🔢 Convirtiendo número escrito: "${numeroEscrito}" → "${numero}"`);
       resultado = resultado.replace(regex, numero);
     }
   }
@@ -150,16 +148,13 @@ const corregirTexto = (texto: string): string => {
     }
 
     if (mejorMatch !== palabra) {
-      console.log(`✏️ Corrección: "${palabra}" → "${mejorMatch}" (${(mejorSimilitud * 100).toFixed(0)}% similitud)`);
+      // Corrección silenciosa de palabras
     }
 
     return mejorMatch;
   });
 
   const resultado = palabrasCorregidas.join(' ');
-  if (resultado !== texto.toLowerCase()) {
-    console.log(`📝 Texto corregido completo: "${texto}" → "${resultado}"`);
-  }
   return resultado;
 };
 
@@ -218,7 +213,6 @@ export const analizarFechaHora = (input: string): ParseResult => {
 
     // Convertir números escritos a dígitos antes de procesar
     const inputConNumeros = convertirNumerosEscritos(input);
-    console.log(`🔢 Input después de convertir números: "${input}" → "${inputConNumeros}"`);
 
     // Primer intento: parseo directo
     let results = chrono.es.parse(inputConNumeros, boliviaTime);
@@ -229,7 +223,6 @@ export const analizarFechaHora = (input: string): ParseResult => {
 
       // Si hubo correcciones, intentar parsear de nuevo
       if (textoCorregido !== inputConNumeros.toLowerCase()) {
-        console.log(`🔄 Reintentando con texto corregido: "${textoCorregido}"`);
         results = chrono.es.parse(textoCorregido, boliviaTime);
       }
 
@@ -237,13 +230,13 @@ export const analizarFechaHora = (input: string): ParseResult => {
       if (results.length === 0) {
         return {
           success: false,
-          message: 'No pude entender la fecha y hora.\n\n📝 Ejemplos válidos:\n• "hoy a las 6 PM"\n• "mañana a las 2:30 de la tarde"\n• "el lunes a las 10 AM"\n• "tres de la tarde"'
+          message: 'No pude entender la fecha y hora.\n\n Ejemplos válidos:\n• "hoy a las 6 PM"\n• "mañana a las 2:30 de la tarde"\n• "el lunes a las 10 AM"\n• "tres de la tarde"'
         };
       }
     }
 
     const result = results[0];
-const parsedDate = result.start.date();
+    const parsedDate = result.start.date();
 
     let tieneHora = result.start.isCertain('hour');
     const tieneFecha = result.start.isCertain('day') ||
@@ -255,7 +248,6 @@ const parsedDate = result.start.date();
     const esMediodia = /\b(medio\s*d[ií]a|mediod[ií]a)\b/.test(inputLower);
     
     if (esMediodia) {
-      console.log(`🕐 Detectado mediodía, estableciendo hora a 12:00`);
       parsedDate.setHours(12);
       parsedDate.setMinutes(0);
       parsedDate.setSeconds(0);
@@ -275,7 +267,6 @@ const parsedDate = result.start.date();
       // Si la hora es menor a 12 y hay indicador de tarde/noche, convertir a formato 24h
       if (hour > 0 && hour < 12) {
         if (esTarde || esNoche) {
-          console.log(`🔄 Corrigiendo hora: ${hour}:00 → ${hour + 12}:00 (detectado: ${esTarde ? 'tarde' : 'noche'})`);
           parsedDate.setHours(hour + 12);
         }
       }
@@ -285,15 +276,6 @@ const parsedDate = result.start.date();
         // Esto es correcto en español
       }
     }
-
-    console.log('🔍 Chrono Parse:', {
-      input,
-      tieneHora,
-      tieneFecha,
-      hour: result.start.get('hour'),
-      minute: result.start.get('minute'),
-      parsedDate
-    });
 
     // Caso 1: Tiene fecha Y hora completa
     if (tieneFecha && tieneHora) {
@@ -329,11 +311,10 @@ const parsedDate = result.start.date();
 
     return {
       success: false,
-      message: 'Por favor especifica la fecha y hora.\n\n💡 Ejemplo: "mañana a las 3 pm"'
+      message: 'Por favor especifica la fecha y hora.\n\n Ejemplo: "mañana a las 3 pm"'
     };
 
   } catch (error) {
-    console.error('❌ Error parsing date:', error);
     return {
       success: false,
       message: 'Error al procesar la fecha. Intenta ser más específico.'
@@ -352,7 +333,6 @@ export const combinarFechaHora = (fecha: Date, horaStr: string): Date | null => 
     const esMediodia = /\b(medio\s*d[ií]a|mediod[ií]a)\b/.test(horaStrLower);
     
     if (esMediodia) {
-      console.log(`🕐 Detectado mediodía en combinarFechaHora, estableciendo hora a 12:00`);
       const nuevaFecha = new Date(fecha);
       nuevaFecha.setHours(12);
       nuevaFecha.setMinutes(0);
@@ -363,7 +343,6 @@ export const combinarFechaHora = (fecha: Date, horaStr: string): Date | null => 
     
     // Convertir números escritos a dígitos antes de procesar
     const horaStrConNumeros = convertirNumerosEscritos(horaStr);
-    console.log(`🔢 Hora después de convertir números: "${horaStr}" → "${horaStrConNumeros}"`);
     
     let horaResult = chrono.es.parse(horaStrConNumeros, fecha);
 
@@ -371,7 +350,6 @@ export const combinarFechaHora = (fecha: Date, horaStr: string): Date | null => 
     if (horaResult.length === 0) {
       const textoCorregido = corregirTexto(horaStrConNumeros);
       if (textoCorregido !== horaStrConNumeros.toLowerCase()) {
-        console.log(`🔄 Corrigiendo hora: "${horaStrConNumeros}" → "${textoCorregido}"`);
         horaResult = chrono.es.parse(textoCorregido, fecha);
       }
     }
@@ -389,7 +367,6 @@ export const combinarFechaHora = (fecha: Date, horaStr: string): Date | null => 
     const esNoche = /\b(noche)\b/.test(horaStrLower);
     
     if (hour > 0 && hour < 12 && (esTarde || esNoche)) {
-      console.log(`🔄 Corrigiendo hora en combinarFechaHora: ${hour}:00 → ${hour + 12}:00`);
       hour = hour + 12;
     }
     
@@ -400,7 +377,6 @@ export const combinarFechaHora = (fecha: Date, horaStr: string): Date | null => 
 
     return nuevaFecha;
   } catch (error) {
-    console.error('❌ Error combinando fecha y hora:', error);
     return null;
   }
 };
@@ -414,7 +390,6 @@ export const combinarHoraFecha = (hora: number, minuto: number, fechaStr: string
     
     // Convertir números escritos a dígitos antes de procesar
     const fechaStrConNumeros = convertirNumerosEscritos(fechaStr);
-    console.log(`🔢 Fecha después de convertir números: "${fechaStr}" → "${fechaStrConNumeros}"`);
     
     let resultados = chrono.es.parse(fechaStrConNumeros, boliviaTime);
 
@@ -422,7 +397,6 @@ export const combinarHoraFecha = (hora: number, minuto: number, fechaStr: string
     if (resultados.length === 0) {
       const textoCorregido = corregirTexto(fechaStrConNumeros);
       if (textoCorregido !== fechaStrConNumeros.toLowerCase()) {
-        console.log(`🔄 Corrigiendo fecha: "${fechaStrConNumeros}" → "${textoCorregido}"`);
         resultados = chrono.es.parse(textoCorregido, boliviaTime);
       }
     }

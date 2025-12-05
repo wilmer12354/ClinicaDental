@@ -5,7 +5,6 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('Error: Missing Supabase environment variables');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
@@ -36,13 +35,11 @@ export const getDailyTransactions = async (date: Date = new Date()) => {
       .order('transaction_date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching transactions:', error);
-      throw error;
+      throw new Error(`Error fetching transactions: ${error.message}`);
     }
 
     return data as Transaction[];
   } catch (error) {
-    console.error('Error in getDailyTransactions:', error);
-    throw error;
+    throw new Error(`Error in getDailyTransactions: ${error.message}`);
   }
 };

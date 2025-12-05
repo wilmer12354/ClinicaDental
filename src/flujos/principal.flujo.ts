@@ -17,7 +17,7 @@ export const principalFlujo = addKeyword(EVENTS.WELCOME)
   .addAction(async (ctx, { gotoFlow, state, provider }) => {
 
     const numeroCelular = obtenerNumeroTelefono(ctx);
-    console.log("Número de teléfono:", numeroCelular)
+    
 
     try {
 
@@ -25,13 +25,13 @@ export const principalFlujo = addKeyword(EVENTS.WELCOME)
 
 
       if (await listaNegraTurso.estaBloqueado(numeroCelular)) {
-        console.log("🚫 Número bloqueado, no se procesará el mensaje");
+        
         return;
       }
 
 
       if (numeroCelular === process.env.ADMIN_NUMBER) {
-        console.log("ADMIN DETECTADO")
+        
         await state.update({ mensajeAcumulado: ctx.body })
         return gotoFlow(flujoListaNegra)
       }
@@ -43,7 +43,7 @@ export const principalFlujo = addKeyword(EVENTS.WELCOME)
           return gotoFlow(flujoRegistro)
         } else {
           if (dbPaciente.estado === 'ACTIVO') {
-            console.log("ENVIANDO DESDE PRINCIPAL A DETECTAR INTENCION", state.get('mensajeAcumulado'))
+            
             return gotoFlow(detectarIntencion)
           } else if (dbPaciente.estado === 'DERIVA_MEDICO') {
             await responderConAnimacion(provider, ctx, 'Ya se le comunicó al médico, no spamee por favor...');

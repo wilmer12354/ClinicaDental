@@ -26,17 +26,11 @@ export const iniciarTemporizador = (
     }
 
     let segundosRestantes = Math.floor(ms / 1000);
-    console.log(`⏱️ Temporizador iniciado para ${ctx.from}: ${segundosRestantes}s`);
-
     intervalosCuentaRegresiva[ctx.from] = setInterval(() => {
         segundosRestantes--;
-        if (segundosRestantes > 0) {
-            console.log(`⏳ ${ctx.from}: ${segundosRestantes}s restantes`);
-        }
     }, 1000);
 
     temporizadores[ctx.from] = setTimeout(() => {
-        console.log(`⏰ Timeout alcanzado para: ${ctx.from}`);
 
         if (intervalosCuentaRegresiva[ctx.from]) {
             clearInterval(intervalosCuentaRegresiva[ctx.from]);
@@ -54,23 +48,18 @@ export const reiniciarTemporizador = (
     ms: number
 ) => {
     detenerTemporizador(ctx);
-    console.log(`🔄 Temporizador reiniciado para: ${ctx.from}`);
     iniciarTemporizador(ctx, gotoFlow, ms);
 }
 
 // Función para detener el temporizador
 export const detenerTemporizador = (ctx: BotContext) => {
-    console.log(`🛑 Intentando detener temporizador para: ${ctx.from}`);
-
     if (temporizadores[ctx.from]) {
         clearTimeout(temporizadores[ctx.from]);
         delete temporizadores[ctx.from];
-        console.log(`✅ Temporizador eliminado para: ${ctx.from}`);
     }
 
     if (intervalosCuentaRegresiva[ctx.from]) {
         clearInterval(intervalosCuentaRegresiva[ctx.from]);
         delete intervalosCuentaRegresiva[ctx.from];
-        console.log(`✅ Cuenta regresiva eliminada para: ${ctx.from}`);
     }
 }

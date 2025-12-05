@@ -25,7 +25,7 @@ export const flujoCancelar = addKeyword(EVENTS.ACTION)
         const numeroCelular = (ctx.key?.remoteJid || ctx.from).split('@')[0];
         const formattedPhone = formatBolivianPhone(numeroCelular);
 
-        console.log('🔍 Buscando citas para:', formattedPhone);
+       
 
         await responderConAnimacion(provider, ctx, "🔍 Buscando tus citas agendadas...");
 
@@ -33,10 +33,7 @@ export const flujoCancelar = addKeyword(EVENTS.ACTION)
         const listarCitas = await obtenerCitasPaciente(formattedPhone);
         //    ^^^^^^^^^^^ Ya es el array directamente
         
-        console.log('📊 DEBUG - Respuesta completa:', JSON.stringify(listarCitas, null, 2));
-        console.log('📊 Tipo de dato:', typeof listarCitas);
-        console.log('📊 Es array?:', Array.isArray(listarCitas));
-        console.log('📊 Longitud:', listarCitas?.length);
+   
 
         // ✅ Verificar directamente el array
         if (!listarCitas || !Array.isArray(listarCitas) || listarCitas.length === 0) {
@@ -158,13 +155,11 @@ export const flujoCancelar = addKeyword(EVENTS.ACTION)
 
                 await responderConAnimacion(provider, ctx, "⏳ Cancelando tu cita...");
 
-                console.log('🔍 DEBUG - EventId a cancelar:', selectedAppointment.eventId);
-                console.log('🔍 DEBUG - Tipo de eventId:', typeof selectedAppointment.eventId);
-                console.log('🔍 DEBUG - Longitud eventId:', selectedAppointment.eventId?.length);
+             
 
                 const result = await cancelarCita(selectedAppointment.eventId);
 
-                console.log('📊 DEBUG - Respuesta completa del servidor:', JSON.stringify(result, null, 2));
+                
 
                 if (result.success) {
                     await responderConAnimacion(provider, ctx, `✅ *Cita cancelada exitosamente*

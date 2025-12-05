@@ -106,9 +106,7 @@ export const flujoGemini = addKeyword(EVENTS.ACTION)
             { role: "assistant" as const, content: item.respuesta }
         ]);
 
-        console.log("📜 Historial limpio:", limitedHistory)
 
-        console.log('Mensaje acumulado llegado de gemini flow:', state.get('mensajeAcumulado'))
 
         // Construir contexto para Gemini
         const prompt = cargarArchivoPrompt('prompt_Gemini.txt')

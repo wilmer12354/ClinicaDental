@@ -13,7 +13,6 @@ export function cargarArchivoPrompt(filename: string): string {
     }
     return contenido
   } catch (error: any) {
-    console.error('Error al cargar el archivo de prompt:', error)
-    throw error
+    throw new Error(`Error al cargar el archivo de prompt: ${error.message}`)
   }
 }

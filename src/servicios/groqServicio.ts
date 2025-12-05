@@ -48,7 +48,7 @@ export const transcribeAudio = async (audioPath: string): Promise<string> => {
     let rutaConvertida: string | null = null;
     
     try {
-        console.log('🎤 Iniciando transcripción con Groq...');
+        
         
         // Verificar que el archivo existe
         if (!fs.existsSync(audioPath)) {
@@ -66,7 +66,7 @@ export const transcribeAudio = async (audioPath: string): Promise<string> => {
         const audioFile = fs.createReadStream(rutaConvertida);
         
         // Realizar la transcripción
-        console.log('🔊 Enviando a Groq para transcripción...');
+        
         const transcripcion = await groq.audio.transcriptions.create({
             file: audioFile,
             model: 'whisper-large-v3',
@@ -75,12 +75,12 @@ export const transcribeAudio = async (audioPath: string): Promise<string> => {
             temperature: 0.0
         });
 
-        console.log('✅ Transcripción completada');
+       
         
         // Limpiar archivo convertido
         if (rutaConvertida && fs.existsSync(rutaConvertida)) {
             fs.unlinkSync(rutaConvertida);
-            console.log('🗑️  Archivo convertido eliminado');
+            
         }
         
         return transcripcion.text;
@@ -109,7 +109,7 @@ export const limpiarAudio = (audioPath: string): void => {
     try {
         if (fs.existsSync(audioPath)) {
             fs.unlinkSync(audioPath);
-            console.log('🗑️  Archivo temporal eliminado');
+            
         }
     } catch (error) {
         console.error('⚠️  Error al eliminar archivo temporal:', error);

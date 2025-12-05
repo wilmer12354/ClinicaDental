@@ -136,7 +136,7 @@ export const flujoEspecialidades = addKeyword(EVENTS.ACTION)
 
 
                 if (preguntaPorPrecio) {
-                    console.log('💰 Usuario pregunta por precio después de consultar especialidad');
+                    
                     // Guardar la especialidad consultada antes de redirigir
                     await state.update({
                         mensajeAcumulado: respuesta,
@@ -179,7 +179,7 @@ export const flujoEspecialidades = addKeyword(EVENTS.ACTION)
 
 
                 if (preguntaPorPrecio) {
-                    console.log('💰 Usuario pregunta por precio después de consultar especialidad');
+                   
                     // Guardar la especialidad consultada antes de redirigir
                     await state.update({
                         mensajeAcumulado: respuesta,
@@ -188,12 +188,12 @@ export const flujoEspecialidades = addKeyword(EVENTS.ACTION)
                     return gotoFlow(flujoPrecios);
                 }
                 if (esRespuestaAfirmativa(respuesta)) {
-                    console.log('✅ Usuario quiere agendar después de consultar especialidad');
+                    
                     return gotoFlow(flujoReserva);
                 }
 
                 if (esRespuestaNegativa(respuesta)) {
-                    console.log('❌ Usuario no quiere agendar');
+                    
                     await responderConAnimacion(provider, ctx, `Entiendo ${nombrePaciente}, ¿en qué más te puedo ayudar?`);
                     await state.clear();
                     return;
@@ -223,7 +223,7 @@ export const flujoPrecios = addKeyword(EVENTS.ACTION)
         const especialidadDesdeOtroFlujo = state.get('especialidadDesdeOtroFlujo');
 
         if (especialidadDesdeOtroFlujo) {
-            console.log('📋 Mostrando precio de especialidad consultada previamente:', especialidadDesdeOtroFlujo);
+            
 
             let mensajeRespuesta = '';
 
@@ -365,12 +365,12 @@ export const flujoPrecios = addKeyword(EVENTS.ACTION)
             // Si preguntó por rebaja y ahora responde
             if (preguntoPorRebaja) {
                 if (esRespuestaAfirmativa(respuesta)) {
-                    console.log('✅ Usuario quiere agendar después de preguntar por rebaja');
+                   
                     return gotoFlow(flujoReserva);
                 }
 
                 if (esRespuestaNegativa(respuesta)) {
-                    console.log('❌ Usuario no quiere agendar');
+                    
                     await responderConAnimacion(provider, ctx, "Entiendo, cuando desees puedes visitarnos o escribirnos. ¿En qué más te puedo ayudar?");
                     await state.clear();
                     return;
@@ -384,13 +384,13 @@ export const flujoPrecios = addKeyword(EVENTS.ACTION)
 
             if (especialidadPrecio || mostroTodosPrecios) {
                 if (esRespuestaAfirmativa(respuesta)) {
-                    console.log('✅ Usuario quiere agendar después de ver precios');
+                    
                     await state.clear();
                     return gotoFlow(flujoReserva);
                 }
 
                 if (esRespuestaNegativa(respuesta)) {
-                    console.log('❌ Usuario no quiere agendar');
+                   
                     await responderConAnimacion(provider, ctx, `Entiendo, ${nombrePaciente}, ¿en qué más te puedo ayudar?`);
                     await state.clear();
                     return;

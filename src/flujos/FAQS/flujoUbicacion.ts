@@ -68,7 +68,7 @@ export const flujoUbicacion = addKeyword(EVENTS.ACTION)
                 fecha: new Date()
             });
         } else {
-            console.log(`⏭️ No se guarda en historial - Intención repetida: ${ultimaIntencion}`);
+            
         }
 
         await state.update({ esperandoDecisionUbicacion: true });
@@ -88,14 +88,14 @@ export const flujoUbicacion = addKeyword(EVENTS.ACTION)
             if (esperandoDecision) {
                 // Usuario responde si quiere ayuda o no
                 if (esRespuestaAfirmativa(respuesta)) {
-                    console.log('✅ Usuario quiere ayuda con la ubicación');
+                    
                     await responderConAnimacion(provider, ctx, "¡Perfecto! Por favor comparte tu ubicación actual y te diré cuál sucursal te queda más cerca 📍");
                     await state.update({ esperandoUbicacionUsuario: true, esperandoDecisionUbicacion: false });
                     return fallBack();
                 }
 
                 if (esRespuestaNegativa(respuesta)) {
-                    console.log('❌ Usuario no necesita ayuda con ubicación');
+                    
                     await state.update({ esperandoDecisionUbicacion: false });
                     const mensajeAgendar = "Entendido. ¿Te gustaría agendar una cita en alguna de nuestras sucursales?";
                     await responderConAnimacion(provider, ctx, mensajeAgendar);
@@ -111,7 +111,7 @@ export const flujoUbicacion = addKeyword(EVENTS.ACTION)
             const esperandoUbicacion = state.get('esperandoUbicacionUsuario');
             if (esperandoUbicacion) {
                 // Verificar si envió ubicación - múltiples estructuras posibles
-                console.log('🔍 Objeto ctx completo:', JSON.stringify(ctx, null, 2));
+                
 
                 let latitude, longitude;
 
@@ -127,7 +127,7 @@ export const flujoUbicacion = addKeyword(EVENTS.ACTION)
                     longitude = ctx.location.longitude || ctx.location.lon;
                 }
 
-                console.log(`📍 Ubicación extraída: ${latitude}, ${longitude}`);
+               
 
                 if (latitude && longitude) {
 
@@ -194,13 +194,13 @@ export const flujoUbicacion = addKeyword(EVENTS.ACTION)
             const esperandoAgenda = state.get('esperandoConfirmacionAgenda');
             if (esperandoAgenda) {
                 if (esRespuestaAfirmativa(respuesta)) {
-                    console.log('✅ Usuario quiere agendar');
+                    
                     await state.clear();
                     return gotoFlow(flujoReserva);
                 }
 
                 if (esRespuestaNegativa(respuesta)) {
-                    console.log('❌ Usuario no quiere agendar');
+                    
                     await responderConAnimacion(provider, ctx, "Entiendo, ¿en qué más te puedo ayudar?");
                     await state.clear();
                     return;

@@ -149,11 +149,8 @@ export async function validarNombreConIA(nombre: string): Promise<{ valido: bool
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
     
     if (!GEMINI_API_KEY) {
-      console.warn('⚠️ GEMINI_API_KEY no configurada, usando validación por reglas');
       return { ...esNombreValido(nombre), usoIA: false };
     }
-
-    console.log(`🤖 Validando nombre con Gemini: "${nombre}"`);
 
     // Configurar modelo con instrucciones del sistema
     const model = genAI.getGenerativeModel({ 
@@ -185,23 +182,17 @@ RESPONDE EXACTAMENTE UNA DE ESTAS OPCIONES:
     try {
         textoRespuesta = (await response.text() || '').trim().toUpperCase();
     } catch (error) {
-        console.error('Error al obtener texto de la respuesta:', error);
         // Si hay error al obtener el texto, forzar validación por reglas
         return { ...esNombreValido(nombre), usoIA: false };
     }
 
-    console.log(`📝 Respuesta de Gemini: "${textoRespuesta}"`);
-
     // Si la respuesta está vacía, usar validación por reglas
     if (!textoRespuesta) {
-        console.warn('⚠️ Respuesta vacía de Gemini, usando validación por reglas');
         return { ...esNombreValido(nombre), usoIA: false };
     }
 
     // Parsear respuesta simple - más flexible
     const esValido = /\b(SI|S[ÍI]|YES|VERDADERO|TRUE|OK)\b/i.test(textoRespuesta);
-
-    console.log(`✅ Validación con IA: "${nombre}" → ${esValido ? 'VÁLIDO ✓' : 'RECHAZADO ✗'}`);
 
     return {
       valido: esValido,
@@ -210,7 +201,6 @@ RESPONDE EXACTAMENTE UNA DE ESTAS OPCIONES:
     };
 
   } catch (error) {
-    console.warn('⚠️ Error con Gemini, usando validación básica:', error);
     // FALLBACK automático a reglas
     return { ...esNombreValido(nombre), usoIA: false };
   }

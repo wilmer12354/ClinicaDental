@@ -62,7 +62,7 @@ export const comprobarDisponibilidad = async (
       }
     );
     
-    console.log('Respuesta de disponibilidad:', response.data);
+   
     
     return {
       available: response.data.available,
@@ -146,16 +146,14 @@ export const obtenerCitasPaciente = async (phone: string): Promise<any> => {
 // ⭐ NUEVA FUNCIÓN: Cancelar una cita
 export const cancelarCita = async (eventId: string): Promise<{ success: boolean; message?: string }> => {
   try {
-    console.log(' Enviando petición de cancelación:');
-    console.log('   URL:', config.googleScriptUrl);
-    console.log('   EventId:', eventId);
+    
 
     const payload = {
       action: 'cancelAppointment',
       eventId: eventId
     };
 
-    console.log('   Payload completo:', JSON.stringify(payload, null, 2));
+    
 
     const response = await axios.post(
       config.googleScriptUrl,
@@ -166,7 +164,7 @@ export const cancelarCita = async (eventId: string): Promise<{ success: boolean;
       }
     );
 
-    console.log(' Respuesta del servidor:', JSON.stringify(response.data, null, 2));
+  
 
     return {
       success: response.data.success,

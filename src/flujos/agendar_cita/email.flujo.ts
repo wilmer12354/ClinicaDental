@@ -37,7 +37,7 @@ export const flujoEmail = addKeyword(EVENTS.ACTION)
       const emailBD = await instanciaAdaptadorMongo.obtenerEmailPaciente(numeroCelular);
       
       if (emailBD) {
-        console.log(`✅ Email encontrado en BD: ${emailBD}`);
+       
         
         // Guardar en el state
         await state.update({ email: emailBD });
@@ -48,7 +48,7 @@ export const flujoEmail = addKeyword(EVENTS.ACTION)
       }
       
       // Si no tiene email, pedirlo e INICIAR el timer
-      console.log(`📧 Email no encontrado para ${numeroCelular}, solicitando...`);
+    
       await responderConAnimacion(provider, ctx, "Dime tu email");
       await iniciarTemporizador(ctx, gotoFlow, TIMEOUT_MS);
       
@@ -108,7 +108,7 @@ export const flujoEmail = addKeyword(EVENTS.ACTION)
         email: email
       });
       
-      console.log(`✅ Email guardado en BD: ${email}`);
+
       
       // Guardar en estado
       await state.update({ email });

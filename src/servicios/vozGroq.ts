@@ -24,7 +24,7 @@ export const voice2text = async (path: string): Promise<string> => {
         return transcription.text;
 
     } catch(error) {
-        console.log("Error en transcripción:", error);
+        
         return "Error";
     }
 }

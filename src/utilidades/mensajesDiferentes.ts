@@ -314,13 +314,11 @@ class GestorMensajes {
         }
         const subcategorias = this.mensajes.get(flujo);
         if (!subcategorias) {
-            console.warn(`⚠️ Flujo '${flujo}' no encontrado`);
             return 'Disculpa, hubo un problema';
         }
 
         const templates = subcategorias.get(subcategoria);
         if (!templates || templates.length === 0) {
-            console.warn(`⚠️ Subcategoría '${subcategoria}' no encontrada en '${flujo}'`);
             return 'Disculpa, hubo un problema';
         }
 

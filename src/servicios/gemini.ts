@@ -10,8 +10,6 @@ export async function GeminiService(systemPrompt: string, userMessage: string): 
     if (!process.env.GEMINI_API_KEY) {
       throw new Error('GEMINI_API_KEY no está configurada');
     }
-
-    console.log("ENTRANDO A GEMINI.TS")
     
     // Usar modelo válido y systemInstruction
     const model = genAI.getGenerativeModel({ 
@@ -33,7 +31,7 @@ export async function GeminiService(systemPrompt: string, userMessage: string): 
       throw new Error('Respuesta vacía de Gemini');
     }
 
-    console.log("✅ Respuesta generada correctamente");
+   
     return text;
 
   } catch (error) {

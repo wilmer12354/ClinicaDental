@@ -66,13 +66,13 @@ class AdaptadorMongo {
             if (!this.uriBaseDatos) {
                 throw new Error('URI de MongoDB no está definida');
             }
-            console.log('Intentando conectar a MongoDB...');
+
             await mongoose.connect(this.uriBaseDatos, {
                 serverSelectionTimeoutMS: 10000, // Timeout después de 10s
                 socketTimeoutMS: 45000, // Cerrar sockets después de 45s de inactividad
             });
             this.estaConectado = true;
-            console.log('✅ Conectado exitosamente a MongoDB');
+            
         } catch (error: any) {
             this.estaConectado = false;
             console.error('❌ Error al conectar a MongoDB:');
@@ -83,7 +83,7 @@ class AdaptadorMongo {
     // Verificar conexión antes de operaciones
     private async asegurarConexion(): Promise<boolean> {
         if (!this.estaConectado) {
-            console.log('Reintentando conexión a MongoDB...');
+            
             await this.conectar();
         }
         return this.estaConectado;
@@ -108,7 +108,7 @@ class AdaptadorMongo {
                 if (datosCliente.email) clienteExistente.email = datosCliente.email;
 
                 await clienteExistente.save();
-                console.log(`✅ Cliente ${datosCliente.numero} actualizado`);
+                
                 return clienteExistente;
             } else {
                 // Asegurar que el historial esté inicializado
@@ -122,7 +122,7 @@ class AdaptadorMongo {
 
                 const nuevoCliente = new Cliente(datosCompletos);
                 await nuevoCliente.save();
-                console.log(`✅ Cliente ${datosCliente.numero} creado`);
+                
                 return nuevoCliente;
             }
         } catch (error: any) {
@@ -156,7 +156,7 @@ class AdaptadorMongo {
     async agregarHistorial(numeroCliente: string, datosHistorial: IEntradaHistorial): Promise<ICliente | null> {
         try {
             if (!(await this.asegurarConexion())) {
-                console.log("❌ No hay conexión a MongoDB");
+                
                 throw new Error('No hay conexión a MongoDB');
             }
             // Validar datos de historial
@@ -173,10 +173,10 @@ class AdaptadorMongo {
                 console.error(`❌ Cliente con numero ${numeroCliente} no encontrado en la base de datos`);
                 // Intentar mostrar todos los clientes para debugging
                 const todosLosClientes = await Cliente.find({}, 'numero nombre').exec();
-                console.log("📋 Clientes en BD:", todosLosClientes.map(c => ({ numero: c.numero, nombre: c.nombre })));
+                
                 return null;
             }
-            console.log(`✅ Cliente encontrado: ${cliente.nombre} (${cliente.numero})`);
+            
 
             const entradaCompleta: IEntradaHistorial = {
                 intencion: datosHistorial.intencion,
@@ -192,7 +192,7 @@ class AdaptadorMongo {
             const clienteGuardado = await cliente.save();
 
             const clienteVerificacion = await Cliente.findOne({ numero: numeroCliente }).exec();
-            console.log("🔍 Verificación final - Historial en BD:", clienteVerificacion?.historial.length, "entradas");
+            
 
             return clienteGuardado;
         } catch (error: any) {
@@ -242,14 +242,14 @@ class AdaptadorMongo {
             const cliente = await Cliente.findOne({ numero }).select('historial').exec();
 
             if (!cliente || !cliente.historial || cliente.historial.length === 0) {
-                console.log(`ℹ️ Cliente ${numero} no tiene historial o no existe`);
+               
                 return null;
             }
 
             // Obtener la última entrada del historial
             const ultimaEntrada = cliente.historial[cliente.historial.length - 1];
 
-            console.log(`📋 Última intención de ${numero}: ${ultimaEntrada.intencion}`);
+            
 
             return ultimaEntrada.intencion;
         } catch (error: any) {
@@ -266,7 +266,7 @@ class AdaptadorMongo {
             const cliente = await Cliente.findOne({ numero }).select('historial').exec();
 
             if (!cliente || !cliente.historial || cliente.historial.length === 0) {
-                console.log(`ℹ️ Cliente ${numero} no tiene historial o no existe`);
+                
                 return null;
             }
 
@@ -283,11 +283,11 @@ class AdaptadorMongo {
                 }));
 
             if (conversacionesGemini.length === 0) {
-                console.log(`ℹ️ Cliente ${numero} no tiene conversaciones GEMINI recientes`);
+                
                 return null;
             }
 
-            console.log(`📋 Se encontraron ${conversacionesGemini.length} conversaciones GEMINI para ${numero}`);
+            
 
             return conversacionesGemini;
         } catch (error: any) {
@@ -299,14 +299,14 @@ class AdaptadorMongo {
     async obtenerUltimaConversacion(numeroCliente: string): Promise<Date | null> {
         try {
             if (!(await this.asegurarConexion())) {
-                console.log("❌ No hay conexión a MongoDB");
+                
                 throw new Error('No hay conexión a MongoDB');
             }
 
             const cliente = await Cliente.findOne({ numero: numeroCliente }).exec();
 
             if (!cliente.historial || cliente.historial.length === 0) {
-                console.log(`ℹ️ Cliente ${numeroCliente} no tiene historial`);
+                
                 return null;
             }
             // Obtener la última entrada del historial
@@ -336,7 +336,7 @@ class AdaptadorMongo {
                 return null;
             }
 
-            console.log(`✅ Estado actualizado para ${cliente.nombre}: ${nuevoEstado}`);
+            
             return cliente;
         } catch (error: any) {
             console.error("❌ Error al cambiar estado:", error);

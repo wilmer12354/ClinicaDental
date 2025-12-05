@@ -26,8 +26,7 @@ export const MarcarComoLeido = async (provider: Provider, messageKey: any) => {
         const sock = provider.vendor;
         await sock.readMessages([messageKey]);
     } catch (error) {
-        console.error('❌ [SOCKET] Error al marcar mensaje como leído:', error);
-        throw error;
+        throw new Error(`Error al marcar mensaje como leído: ${error.message}`);
     }
 };
 
@@ -60,8 +59,7 @@ export const MostrarEscribiendo = async (
         const sock = provider.vendor;
         await sock.sendPresenceUpdate(status, jid);
     } catch (error) {
-        console.error('❌ [SOCKET] Error al actualizar presencia:', error);
-        throw error;
+        throw new Error(`Error al actualizar presencia: ${error.message}`);
     }
 };
 
@@ -88,8 +86,7 @@ export const EnviarMensaje = async (
         const result = await sock.sendMessage(jid, { text: message });
         return result;
     } catch (error) {
-        console.error('❌ [SOCKET] Error al enviar mensaje:', error);
-        throw error;
+        throw new Error(`Error al enviar mensaje: ${error.message}`);
     }
 };
 
@@ -122,7 +119,7 @@ export const enviarImagenConReintentos = async (
             }
             // Si es una URL
             else if (typeof imagen === 'string' && imagen.startsWith('http')) {
-                console.log(`📥 Descargando imagen desde URL (intento ${i + 1}/${intentos})...`);
+                
                 const response = await axios.get(imagen, {
                     responseType: 'arraybuffer',
                     timeout: 15000, // 15 segundos
@@ -143,7 +140,7 @@ export const enviarImagenConReintentos = async (
                 throw new Error('Buffer de imagen vacío');
             }
 
-            console.log(`📤 Enviando imagen (${(buffer.length / 1024).toFixed(2)} KB)...`);
+            
 
             // Acceder al socket real de Baileys
             const sock = await provider.getInstance();
@@ -158,7 +155,7 @@ export const enviarImagenConReintentos = async (
                 caption: caption || ''
             });
 
-            console.log(`✅ Imagen enviada correctamente (intento ${i + 1}/${intentos})`);
+          
             return true;
 
         } catch (error: any) {
@@ -172,7 +169,7 @@ export const enviarImagenConReintentos = async (
 
             // Esperar antes de reintentar (backoff exponencial)
             const delay = Math.min(1000 * Math.pow(2, i), 5000); // Max 5 segundos
-            console.log(`⏳ Esperando ${delay}ms antes del siguiente intento...`);
+            
             await new Promise(resolve => setTimeout(resolve, delay));
         }
     }
@@ -219,7 +216,7 @@ export const enviarImagen = async (
             caption: caption || ''
         });
 
-        console.log('✅ Imagen enviada correctamente');
+       
     } catch (error) {
         console.error('❌ Error al enviar imagen:', error);
         throw error; // Re-lanzar para que el llamador lo maneje
@@ -255,7 +252,7 @@ export const enviarDocumento = async (
             mimetype: getMimeType(fileName)
         });
 
-        console.log('✅ Documento enviado correctamente:', fileName);
+      
         return true;
     } catch (error) {
         console.error('❌ Error al enviar documento:', error);
@@ -386,7 +383,7 @@ export const getSocketInfo = (provider: Provider) => {
  * ```
  */
 export const getSocket = (provider: Provider) => {
-    console.log('📡 [SOCKET] Obteniendo referencia directa al socket de Baileys');
+    
     return provider.vendor;
 };
 
@@ -492,26 +489,26 @@ export const socketOperations = async (
         const sock = provider.vendor;
         const jid = actions.jid || ctx.key?.remoteJid || ctx.from;
 
-        console.log('📡 [SOCKET] Ejecutando múltiples operaciones via WebSocket');
+      
 
         if (actions.markAsRead && ctx.key) {
-            console.log('  ↳ Marcando como leído...');
+            
             await sock.readMessages([ctx.key]);
         }
 
         if (actions.showTyping) {
-            console.log('  ↳ Mostrando estado "escribiendo"...');
+            
             await sock.sendPresenceUpdate('composing', jid);
         }
 
         if (actions.showPaused) {
-            console.log('  ↳ Mostrando estado "pausado"...');
+            
             await sock.sendPresenceUpdate('paused', jid);
         }
 
-        console.log('✅ [SOCKET] Operaciones completadas exitosamente');
+       
     } catch (error) {
-        console.error('❌ [SOCKET] Error en operaciones del socket:', error);
+        
         throw error;
     }
 };

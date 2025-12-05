@@ -48,7 +48,7 @@ export const flujoHorario = addKeyword(EVENTS.ACTION)
                 fecha: new Date()
             });
         } else {
-            console.log(`⏭️ No se guarda en historial - Intención repetida: ${ultimaIntencion}`);
+            
         }
 
         await state.clear();
@@ -66,13 +66,13 @@ export const flujoHorario = addKeyword(EVENTS.ACTION)
 
             // Verificar si la respuesta es afirmativa
             if (esRespuestaAfirmativa(respuesta)) {
-                console.log('✅ Usuario quiere agendar');
+                
                 return gotoFlow(flujoReserva);
             }
 
             // Verificar si la respuesta es negativa
             if (esRespuestaNegativa(respuesta)) {
-                console.log('❌ Usuario no quiere agendar');
+                
                 await responderConAnimacion(provider, ctx, "Entiendo, ¿en qué te puedo ayudar?");
                 return;
             }

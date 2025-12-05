@@ -14,10 +14,7 @@ export const flujoConfirmar = addKeyword(EVENTS.ACTION)
 
             // Validar que tenemos todos los datos
             if (!datos.nombrePaciente || !datos.startTime || !datos.motivo) {
-                console.log("Nombre: ", datos.nombrePaciente)
-                console.log("Email: ", datos.email || '')
-                console.log("StartTime: ", datos.startTime)
-                console.log("Motivo: ", datos.motivo)
+                
 
                 await flowDynamic([
                     'Error viendo state'
@@ -55,16 +52,7 @@ export const flujoConfirmar = addKeyword(EVENTS.ACTION)
             } catch (error) {
                 console.error('❌ Error al crear cita:', error);
                 const numeroCelular = (ctx.key?.remoteJid || ctx.from).split('@')[0];
-                console.log({
-                    title: `Cita - ${datos.nombrePaciente}`,
-                    startTime: datos.startTime.toISOString(),
-                    endTime: datos.endTime.toISOString(),
-                    description: `Motivo: ${datos.motivo}\nContacto: ${datos.email}\nTeléfono: ${numeroCelular}`,
-                    email: datos.email,
-                    nombre: datos.nombrePaciente,
-                    telefono: numeroCelular,
-                    motivo: datos.motivo
-                })
+                
                 await responderConAnimacion(provider, ctx, "Error al crear la cita");
                 await state.clear();
             }

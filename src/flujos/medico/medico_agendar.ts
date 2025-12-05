@@ -79,7 +79,7 @@ export const flujoMedicoAgendar = addKeyword(EVENTS.ACTION)
                         motivo: datos.motivo
                     };
                     
-                    console.log('📅 Creando cita:', datosReserva);
+                 
                     
                     const resultado = await agendarCita(datosReserva);
                     
@@ -127,11 +127,11 @@ export const flujoMedicoAgendar = addKeyword(EVENTS.ACTION)
                 
                 await responderConAnimacion(provider, ctx, "🤖 Analizando los datos...");
 
-                console.log('📝 Mensaje recibido:', mensaje);
+                
 
                 // Extraer datos usando Groq
                 const datosExtraidos = await extraerDatosCita(mensaje);
-                console.log('📊 Datos extraídos:', datosExtraidos);
+               
                 
                 // Validar que tengamos los datos mínimos
                 if (!datosExtraidos.nombre || !datosExtraidos.fecha || !datosExtraidos.hora) {

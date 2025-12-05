@@ -160,7 +160,7 @@ async function procesarFechaPendiente(
   gotoFlow: any,
   fallBack: any
 ) {
-  console.log('🕐 Procesando fecha para combinar con hora guardada:', horaParcial, minutoParcial);
+ 
 
   const fechaCombinada = combinarHoraFecha(horaParcial, minutoParcial, mensaje);
 
@@ -174,7 +174,6 @@ async function procesarFechaPendiente(
     return fallBack();
   }
 
-  console.log('📅 Fecha combinada:', fechaCombinada);
 
   await state.update({
     horaParcial: null,
@@ -276,7 +275,7 @@ async function verificarDisponibilidad(
       });
 
       const mensaje = obtenerMensaje('cita', 'horario_ocupado');
-      console.log("Siguiente horario guardado: ", siguienteHorario);
+      
 
       await responderConAnimacion(provider, ctx, mensaje);
       reiniciarTemporizador(ctx, gotoFlow, TIMEOUT_MS);
@@ -391,21 +390,21 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
           mensajeInicial = ctx.body?.trim();
         }
 
-        console.log('🎬 Mensaje inicial original:', mensajeInicial);
+       
 
         // 🔧 PRE-PROCESAMIENTO: Aplicar corrección de errores tipográficos
         const mensajeCorregido = await corregirOrtografia(mensajeInicial);
-        console.log("MENSAJE FECHAHORA_CORREGIDO: ", mensajeCorregido);
+        
 
         if (mensajeCorregido !== mensajeInicial.toLowerCase()) {
-          console.log('✏️ Mensaje corregido:', mensajeCorregido);
+          
           mensajeInicial = mensajeCorregido;
         }
 
         // Intentar parsear fecha/hora del mensaje inicial
         const interpretacion = analizarFechaHora(mensajeInicial);
 
-        console.log('🔍 Interpretación inicial:', interpretacion);
+        
 
         // CASO 1: Ya viene con fecha Y hora completa
         if (interpretacion.success && interpretacion.date) {
@@ -440,7 +439,7 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
             fechaParcial: interpretacion.partialDate.toISOString(),
             preservarEstadoParcial: true
           });
-          console.log('✅ Fecha parcial desde mensaje inicial:', interpretacion.partialDate.toISOString());
+         
           await responderConAnimacion(provider, ctx, interpretacion.message!);
           await iniciarTemporizador(ctx, gotoFlow, TIMEOUT_MS);
           return; // Continuar al siguiente addAnswer para capturar la hora
@@ -453,7 +452,7 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
             minutoParcial: interpretacion.partialMinute || 0,
             preservarEstadoParcial: true
           });
-          console.log('✅ Hora parcial desde mensaje inicial:', interpretacion.partialHour);
+          
           await responderConAnimacion(provider, ctx, interpretacion.message!);
           await iniciarTemporizador(ctx, gotoFlow, TIMEOUT_MS);
           return; // Continuar al siguiente addAnswer para capturar la fecha
@@ -503,13 +502,13 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
 
     }
     // ✅ AGREGAR CORRECCIÓN AQUÍ (justo después de procesar audio/texto)
-    console.log('🎬 Mensaje capturado original:', mensaje);
+
 
     const mensajeCorregido = await corregirOrtografia(mensaje);
-    console.log("MENSAJE CAPTURADO_CORREGIDO: ", mensajeCorregido);
+
 
     if (mensajeCorregido !== mensaje.toLowerCase()) {
-      console.log('✏️ Mensaje corregido:', mensajeCorregido);
+     
       mensaje = mensajeCorregido; // ⬅️ Reemplazar el mensaje con el corregido
 
     }
@@ -533,9 +532,9 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
 
     // Caso 1: Confirmar sugerencia de horario
     if (estadoActual.sugerenciaStart) {
-      console.log("🔔 Procesando respuesta a sugerencia");
+      
       const respuesta = mensaje.toLowerCase().trim();
-      console.log("Respuesta del paciente: ", respuesta)
+    
 
       // Usuario acepta la sugerencia
       if (['si', 'sip', 'sí', 'ok', 'dale', 'aceptar', 'confirmar', 'esta bien', 'normal', 'si claro'].includes(respuesta)) {
@@ -577,7 +576,7 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
         sugerenciaStart: null,
         sugerenciaEnd: null
       });
-      console.log("⚠️ Respuesta no es sí/no, intentando parsear como fecha/hora");
+      
     }
 
     // Caso 2: Usuario ya dio fecha, ahora da hora
@@ -609,7 +608,7 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
 
     // Caso 4: Parseo inicial de fecha/hora
     const interpretacion = analizarFechaHora(mensaje);
-    console.log('🔍 Interpretación:', interpretacion);
+   
 
     // Usuario solo dio fecha
     if (interpretacion.needsTime && interpretacion.partialDate) {
@@ -617,7 +616,7 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
         fechaParcial: interpretacion.partialDate.toISOString(),
         preservarEstadoParcial: true
       });
-      console.log('✅ Fecha parcial guardada:', interpretacion.partialDate.toISOString());
+      
       await responderConAnimacion(provider, ctx, interpretacion.message!);
       await reiniciarTemporizador(ctx, gotoFlow, TIMEOUT_MS);
       return fallBack();
@@ -625,7 +624,7 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
 
     // Usuario solo dio hora
     if (interpretacion.needsDate && interpretacion.partialHour !== undefined) {
-      console.log('💾 Guardando hora parcial:', interpretacion.partialHour, interpretacion.partialMinute);
+      
 
       await state.update({
         horaParcial: interpretacion.partialHour,

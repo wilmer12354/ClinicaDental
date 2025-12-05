@@ -23,7 +23,7 @@ const limpiarNumero = (numero: string): string => {
  */
 const esNumeroValido = (numero: string): boolean => {
   const clean = limpiarNumero(numero);
-  console.log('🔍 Validando número:', clean);
+  
   return clean.length >= 8 && clean.length <= 15
 };
 
@@ -121,7 +121,7 @@ const manejarBloquear = async (
       '🚫'
     );
 
-    console.log(`✅ Bloqueado: +${numeroLimpio}`);
+    
   } else {
     await responderConAnimacion(
       provider,
@@ -190,7 +190,7 @@ const manejarDesbloquear = async (
         `✅ *Número desbloqueado exitosamente*\n\n📞 +${numeroLimpio}`,
         '✅'
       );
-      console.log(`✅ Desbloqueado: +${numeroLimpio}`);
+   
     } else {
       await responderConAnimacion(
         provider,
@@ -242,7 +242,7 @@ const manejarCambiarEstado = async (
     return fallBack();
   }
 
-  console.log('📞 Cambiando estado del número:', numeroObjetivo);
+
 
   // Cambiar estado en la base de datos
   const clienteActualizado = await instanciaAdaptadorMongo.cambiarEstado(
@@ -273,9 +273,6 @@ const manejarCambiarEstado = async (
     '✅'
   );
 
-  console.log(
-    `✅ Estado actualizado: ${clienteActualizado.nombre} (${numeroObjetivo}) → ACTIVO`
-  );
 
   return fallBack();
 };
@@ -306,7 +303,6 @@ export const flujoListaNegra = addKeyword(EVENTS.ACTION).addAction(
     const mensaje = state.get('mensajeAcumulado') || '';
     const comando = mensaje.trim().toLowerCase();
 
-    console.log(' Procesando comando en lista negra:', comando);
 
     // Comando: Listar
     if (comando === 'listar' || comando === 'lista') {

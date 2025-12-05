@@ -31,13 +31,13 @@ const detectarIntencion = addKeyword(EVENTS.ACTION)
       const mensajeAcumulado = await (state.get('mensajeAcumulado'))
       const mensajeFinal= corregirOrtografia(mensajeAcumulado)
 
-      console.log("MENSAJE ACUMULADO CORREGIDO:" , mensajeAcumulado)
+     
 
 
 
       //MENSAJE POR VOZ
       const mensajePorNotaDeVoz = state.get('mensajePorNotaDeVoz');
-      console.log('Mensaje por nota de voz acumulado:', mensajePorNotaDeVoz)
+     
 
       const mensajePaciente = mensajePorNotaDeVoz || mensajeAcumulado;
 
@@ -46,22 +46,22 @@ const detectarIntencion = addKeyword(EVENTS.ACTION)
         return endFlow('No pude entender tu mensaje. Por favor, envía un texto.')
       }
 
-      console.log('Detectando intención para el mensaje:', mensajePaciente)
+   
 
 
       const intencion = await detectarIntencionPorFuse(mensajePaciente)
 
       //Buscar por keywords fuse.js
       if (intencion) {
-        console.log('Intención detectada por palabras clave|:', intencion)
+        
         return enviarAlFlujo(intencion, gotoFlow)
       } else {
-        console.log(intencion)
+       
       }
 
       // Si no coincide con keywords, usar IA
       const intencionIA = await detectarIntencionIA(mensajePaciente)
-      console.log('Intención detectada por IA:', intencionIA)
+      
 
       
       return enviarAlFlujo(intencionIA, gotoFlow)
@@ -111,10 +111,10 @@ export async function detectarIntencionIA(userMessage: string): Promise<string> 
   try {
     const response = await GeminiService(promptDetectarIntencion, userMessage)
 
-    console.log('🤖 Respuesta DE PROMPT_DETECTION:', `"${response}"`)
+    
 
     if (!response || response.trim().length === 0) {
-      console.log('⚠️ Respuesta vacía de Gemini, usando fallback')
+      
       return 'GEMINI'
     }
 
@@ -122,10 +122,10 @@ export async function detectarIntencionIA(userMessage: string): Promise<string> 
     const validIntentions = ['SALUDO', 'OTRO', 'RESERVA', 'GEMINI', 'CANCELAR', 'UBICACION', 'HORARIO', 'DERIVA_MEDICO', 'ESPECIALIDADES', 'PRECIOS']
 
     if (validIntentions.includes(intention)) {
-      console.log('✅ Intención válida detectada:', intention)
+      
       return intention
     } else {
-      console.log('⚠️ Intención no válida:', intention, '- usando GEMINI como fallback')
+      
       return 'GEMINI'
     }
   } catch (error) {

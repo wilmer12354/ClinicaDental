@@ -34,8 +34,6 @@ function normalizeText(text: string): string {
 function detectarIntencionPorFuse(message: string): string | null {
   const normalizedMessage = normalizeText(message);
 
-  console.log(`🔎 Analizando: "${message}" → Normalizado: "${normalizedMessage}"`);
-
   // Buscar coincidencias fuzzy
   const results = fuse.search(normalizedMessage);
 
@@ -44,21 +42,15 @@ function detectarIntencionPorFuse(message: string): string | null {
     const score = bestMatch.score || 1;
     const confidence = ((1 - score) * 100).toFixed(0);
 
-    console.log(`🎯 Mejor match: "${bestMatch.item.keyword}" → ${bestMatch.item.intention} (${confidence}% confianza, score: ${score.toFixed(3)})`);
-
     // Si la confianza es aceptable
     if (score < 0.5) {
       return bestMatch.item.intention;
-    } else {
-      console.log(`⚠️ Confianza muy baja (${confidence}%), no se acepta el match`);
     }
   } else {
-    console.log('❌ No se encontraron matches');
   }
 
   // 🔥 ESTRATEGIA ALTERNATIVA: Buscar palabras clave individuales
   // Si Fuse no encuentra match, buscar keywords simples en el mensaje
-  console.log('🔄 Intentando búsqueda por palabras clave individuales...');
 
   const wordMatches = KEYWORDS_DATA.filter(item => {
     const normalizedKeyword = normalizeText(item.keyword);
@@ -76,11 +68,9 @@ function detectarIntencionPorFuse(message: string): string | null {
     const bestIntention = Object.entries(intentionCounts)
       .sort(([, a], [, b]) => b - a)[0];
 
-    console.log(`✅ Match por palabra clave: ${bestIntention[0]} (${bestIntention[1]} coincidencias)`);
     return bestIntention[0];
   }
 
-  console.log('❌ No se pudo detectar ninguna intención');
   return null;
 }
 

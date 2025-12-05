@@ -34,7 +34,7 @@ class AdaptadorListaNegraTurso {
           estado TEXT NOT NULL DEFAULT 'activo'
         )
       `);
-            console.log('✅ Tabla lista_negra inicializada');
+           
         } catch (error) {
             console.error('❌ Error al inicializar tabla lista_negra:', error);
         }
@@ -57,7 +57,7 @@ class AdaptadorListaNegraTurso {
             // Verificar si ya existe
             const existe = await this.estaBloqueado(numeroLimpio);
             if (existe) {
-                console.log(`⚠️ Número ya bloqueado: ${numeroLimpio}`);
+                
                 return false;
             }
 
@@ -70,7 +70,7 @@ class AdaptadorListaNegraTurso {
             });
 
 
-            console.log(`🚫 Número bloqueado: ${numeroLimpio}`);
+            
             return true;
         } catch (error) {
             console.error('❌ Error al agregar número a lista negra:', error);
@@ -91,11 +91,11 @@ class AdaptadorListaNegraTurso {
             });
 
             if (resultado.rowsAffected > 0) {
-                console.log(`✅ Número desbloqueado: ${numeroLimpio}`);
+                
                 return true;
             }
 
-            console.log(`⚠️ Número no estaba bloqueado: ${numeroLimpio}`);
+            
             return false;
         } catch (error) {
             console.error('❌ Error al eliminar número de lista negra:', error);
@@ -174,7 +174,7 @@ class AdaptadorListaNegraTurso {
             });
 
             if (resultado.rowsAffected > 0) {
-                console.log(`🗑️ Número eliminado permanentemente: ${numeroLimpio}`);
+                
                 return true;
             }
 
@@ -194,7 +194,7 @@ class AdaptadorListaNegraTurso {
         UPDATE lista_negra SET estado = 'inactivo' WHERE estado = 'activo'
       `);
 
-            console.log('🗑️ Lista negra limpiada');
+           
             return true;
         } catch (error) {
             console.error('❌ Error al limpiar lista negra:', error);
@@ -231,7 +231,7 @@ class AdaptadorListaNegraTurso {
             });
 
             if (resultado.rowsAffected > 0) {
-                console.log(`♻️ Número reactivado: ${numeroLimpio}`);
+                
                 return true;
             }
 
