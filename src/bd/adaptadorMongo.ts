@@ -207,19 +207,27 @@ class AdaptadorMongo {
     }
 
     // Obtener nombre del paciente
-    async obtenerNombrePaciente(numero: string): Promise<string | null> {
-        try {
-            if (!(await this.asegurarConexion())) {
-                throw new Error('No hay conexión a MongoDB');
-            }
-
-            const cliente = await Cliente.findOne({ numero }).select('nombre').exec();
-            return cliente?.nombre || null;
-        } catch (error: any) {
-            console.error("❌ Error al obtener nombre del cliente:", error);
-            return null;
+    async obtenerNombrePaciente(numero: string): Promise<string> {
+    try {
+        if (!(await this.asegurarConexion())) {
+            throw new Error('No hay conexión a MongoDB');
         }
+
+        const cliente = await Cliente.findOne({ numero }).select('nombre').exec();
+        
+        // ⭐ Si existe en BD, retorna ese nombre (PRIORIDAD)
+        if (cliente?.nombre) {
+            return cliente.nombre;
+        }
+        
+        // ⭐ Si no existe en BD, retorna un nombre por defecto
+        return 'Cliente';
+        
+    } catch (error: any) {
+        console.error("❌ Error al obtener nombre del cliente:", error);
+        return 'Cliente';
     }
+}
     async obtenerEmailPaciente(numero: string): Promise<string | null> {
         try {
             if (!(await this.asegurarConexion())) {

@@ -58,18 +58,17 @@ export const bienvenidaFlujo = addKeyword(EVENTS.ACTION)
 
 // Flujo para capturar el nombre
 export const flujoRegistro = addKeyword(EVENTS.ACTION)
-    // Primer mensaje de bienvenida
     .addAction(async (ctx, { provider }) => {
         const mensaje = obtenerMensaje('registrar', 'primera_vez');
         await responderConAnimacion(provider, ctx, mensaje);
     })
 
-    // Captura de respuesta
+
     .addAnswer('', { capture: true }, async (ctx, { state, gotoFlow, provider, fallBack }) => {
     const nombreIngresado = ((ctx.body || '').trim())
     const numeroCelular = obtenerNumeroTelefono(ctx);  
     
-    // Validación directa con IA (con fallback automático a reglas)
+ 
     const validacion = await validarNombreConIA(nombreIngresado);
     
     
@@ -94,11 +93,10 @@ export const flujoRegistro = addKeyword(EVENTS.ACTION)
     }
 
     try {
-        // Formatear el nombre correctamente (Primera letra mayúscula)
         const nombreFormateado = formatearNombre(nombreIngresado);
         
         
-        // Guardar en la base de datos con nombre formateado
+   
         await instanciaAdaptadorMongo.agregarOActualizarPaciente({
             nombre: nombreFormateado,
             numero: numeroCelular,
@@ -113,7 +111,7 @@ export const flujoRegistro = addKeyword(EVENTS.ACTION)
         
         await state.update({ 
             pacienteRegistrado: true,
-            nombrePaciente: nombreFormateado, // Guardar para uso posterior
+            nombrePaciente: nombreFormateado, 
             intentosNombre: 0 
         })
 

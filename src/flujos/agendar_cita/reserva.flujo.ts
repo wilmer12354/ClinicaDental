@@ -281,7 +281,7 @@ async function verificarDisponibilidad(
         sugerenciaDireccion: siguienteHorario.direccion || null
       });
 
-      // Construir mensaje con información de la sugerencia
+  
       const mensajeOcupado = obtenerMensaje('cita', 'horario_ocupado');
       const fechaSugerida = formatearFechaHora(new Date(siguienteHorario.start));
       
@@ -301,13 +301,10 @@ async function verificarDisponibilidad(
       await responderConAnimacion(provider, ctx, mensajeSugerencia);
       reiniciarTemporizador(ctx, gotoFlow, TIMEOUT_MS);
 
-      // No hacer gotoFlow, simplemente retornar para que el flujo principal capture la respuesta
       
     }
 
     
-
-    // Si fallBackOrFlowDynamic es fallBack, usarlo; si no, reiniciar flujo
     if (typeof fallBackOrFlowDynamic === 'function') {
       reiniciarTemporizador(ctx, gotoFlow, TIMEOUT_MS);
       return fallBackOrFlowDynamic();

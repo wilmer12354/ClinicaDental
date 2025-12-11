@@ -53,6 +53,9 @@ export const KEYWORDS_DATA = [
   { keyword: 'no puedo ir', intention: 'CANCELAR' },
   { keyword: 'cancelar turno', intention: 'CANCELAR' },
   { keyword: 'no puedo ir', intention: 'CANCELAR' },
+  { keyword: 'quiero cancelar mi cita', intention: 'CANCELAR' },
+  { keyword: 'no podre ir a mi cita', intention: 'CANCELAR' },
+  
 
   // UBICACION
   { keyword: 'ubicacion', intention: 'UBICACION' },

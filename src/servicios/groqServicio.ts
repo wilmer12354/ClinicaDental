@@ -133,43 +133,38 @@ export const extraerDatosCita = async (texto: string): Promise<any> => {
     try {
         // Obtener fecha y hora actual
         const ahora = new Date();
-        const fechaHoy = ahora.toISOString().split('T')[0]; // YYYY-MM-DD
-        const horaActual = ahora.toTimeString().split(' ')[0].substring(0, 5); // HH:MM
-        const diaSemana = ahora.toLocaleDateString('es-ES', { weekday: 'long' });
+        
+        // ⭐ RESTAR 1 DÍA para compensar el bug
+        const ahoraAjustado = new Date(ahora);
+        ahoraAjustado.setDate(ahoraAjustado.getDate() - 1);
+        
+        const fechaHoy = ahoraAjustado.toISOString().split('T')[0];
+        const diaSemana = ahoraAjustado.toLocaleDateString('es-ES', { weekday: 'long' });
         
         const completion = await groq.chat.completions.create({
             messages: [
                 {
                     role: 'system',
-                    content: `Eres un asistente que extrae información de citas médicas. 
-                    Debes extraer: nombre del paciente, email, teléfono, fecha, hora y motivo.
-                    
-                    CONTEXTO TEMPORAL:
-                    - HOY es: ${fechaHoy} (${diaSemana})
-                    - Hora actual: ${horaActual}
-                    
-                    IMPORTANTE:
-                    - La fecha debe estar en formato ISO: YYYY-MM-DD
-                    - La hora en formato 24h: HH:MM
-                    - Si no encuentras algún dato, devuelve null para ese campo
-                    - El teléfono debe ser solo números
-                    
-                    INTERPRETACIÓN DE FECHAS RELATIVAS:
-                    - "hoy" = ${fechaHoy}
-                    - "mañana" = calcula sumando 1 día a ${fechaHoy}
-                    - "pasado mañana" = calcula sumando 2 días a ${fechaHoy}
-                    - "próximo lunes/martes/etc" = calcula el siguiente día de la semana desde ${fechaHoy}
-                    - "en 3 días" = calcula sumando los días correspondientes
-                    
-                    Responde ÚNICAMENTE con un JSON válido, sin texto adicional ni markdown:
-                    {
-                        "nombre": "string",
-                        "email": "string",
-                        "telefono": "string",
-                        "fecha": "YYYY-MM-DD",
-                        "hora": "HH:MM",
-                        "motivo": "string"
-                    }`
+                    content: `Extrae datos de citas médicas en JSON.
+
+HOY: ${fechaHoy} (${diaSemana})
+
+Formato de salida:
+{
+  "nombre": "string o null",
+  "email": "string o null",
+  "telefono": "solo números o null",
+  "fecha": "YYYY-MM-DD",
+  "hora": "HH:MM en formato 24h",
+  "motivo": "string o null"
+}
+
+Fechas relativas:
+- hoy = ${fechaHoy}
+- mañana = +1 día
+- próximo [día] = calcular desde ${fechaHoy}
+
+Solo JSON, sin markdown.`
                 },
                 {
                     role: 'user',
@@ -182,8 +177,6 @@ export const extraerDatosCita = async (texto: string): Promise<any> => {
         });
 
         const respuesta = completion.choices[0]?.message?.content || '{}';
-        
-        // Limpiar la respuesta por si tiene texto extra o markdown
         const jsonMatch = respuesta.match(/\{[\s\S]*\}/);
         const jsonString = jsonMatch ? jsonMatch[0] : respuesta;
         
