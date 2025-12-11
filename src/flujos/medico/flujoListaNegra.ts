@@ -149,13 +149,14 @@ const manejarDesbloquear = async (
       provider,
       ctx,
       '⚠️ *Formato incorrecto*\n\n' +
-      'Uso: `desbloquear +59171234567`\n' +
+
       'Ejemplo: `desbloquear 71234567`'
     );
     return fallBack();
   }
 
   const numeroADesbloquear = partes[1];
+  console.log('numeroADesbloquear', numeroADesbloquear);
 
   // Validar número
   if (!esNumeroValido(numeroADesbloquear)) {
@@ -169,10 +170,12 @@ const manejarDesbloquear = async (
   }
 
   const numeroLimpio = limpiarNumero(numeroADesbloquear);
+  console.log('numeroLimpio', numeroLimpio);
+  const numeroConPrefijo = '591'+numeroLimpio;
 
 
   // Verificar si está bloqueado y desbloquear
-  const estaBloqueado = await listaNegraTurso.estaBloqueado(numeroLimpio);
+  const estaBloqueado = await listaNegraTurso.estaBloqueado(numeroConPrefijo);
   
   if (!estaBloqueado) {
     await responderConAnimacion(
@@ -181,7 +184,8 @@ const manejarDesbloquear = async (
       `ℹ️ El número +${numeroLimpio} no estaba bloqueado`
     );
   } else {
-    const eliminado = await listaNegraTurso.eliminar(numeroLimpio);
+    
+    const eliminado = await listaNegraTurso.eliminar(numeroConPrefijo);
     
     if (eliminado) {
       await responderConAnimacion(
@@ -246,7 +250,7 @@ const manejarCambiarEstado = async (
 
   // Cambiar estado en la base de datos
   const clienteActualizado = await instanciaAdaptadorMongo.cambiarEstado(
-    numeroObjetivo,
+    591+numeroObjetivo,
     'ACTIVO'
   );
 

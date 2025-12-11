@@ -17,6 +17,7 @@ export const principalFlujo = addKeyword(EVENTS.WELCOME)
   .addAction(async (ctx, { gotoFlow, state, provider }) => {
 
     const numeroCelular = obtenerNumeroTelefono(ctx);
+    console.log('numeroCelular', numeroCelular);
     
 
     try {

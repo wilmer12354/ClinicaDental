@@ -63,7 +63,7 @@ class AdaptadorListaNegraTurso {
 
             const fechaActual = new Date().toISOString();
 
-            const numeroConPrefijo = `591${numeroLimpio}`;
+            const numeroConPrefijo = `${numeroLimpio}`;
             await this.cliente.execute({
                 sql: `INSERT INTO lista_negra (numero, fecha_bloqueo, estado) VALUES (?, ?, ?)`,
                 args: [numeroConPrefijo, fechaActual, 'activo']
@@ -87,7 +87,7 @@ class AdaptadorListaNegraTurso {
 
             const resultado = await this.cliente.execute({
                 sql: `UPDATE lista_negra SET estado = 'inactivo' WHERE numero = ? AND estado = 'activo'`,
-                args: [numeroLimpio]
+                args: [numeroLimpio.substring(3)]
             });
 
             if (resultado.rowsAffected > 0) {
@@ -109,14 +109,16 @@ class AdaptadorListaNegraTurso {
     async estaBloqueado(numero: string): Promise<boolean> {
         try {
             const numeroLimpio = this.limpiarNumero(numero);
-          
+            
+            
 
             const resultado = await this.cliente.execute({
                 sql: `SELECT COUNT(*) as count FROM lista_negra WHERE numero = ? AND estado = 'activo'`,
-                args: [numeroLimpio]
+                args: [numeroLimpio.substring(3)]
             });
 
             const count = resultado.rows[0]?.count as number;
+            
             return count > 0;
         } catch (error) {
             console.error('❌ Error al verificar número en lista negra:', error);
