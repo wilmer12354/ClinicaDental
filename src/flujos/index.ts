@@ -18,6 +18,7 @@ import { principalFlujo } from "./principal.flujo";
 import { flujoMedicoAgendar } from "./medico/medico_agendar";
 import { flujoEspecialidades } from "./FAQS/especialidades";
 import { flujoPrecios } from "./FAQS/especialidades";
+import { flujoLlamada } from "./FAQS/llamada";
 
 
 export default createFlow([
@@ -41,4 +42,5 @@ export default createFlow([
     flujoMedicoAgendar,
     flujoEspecialidades,
     flujoPrecios,
+    flujoLlamada,
 ]);
