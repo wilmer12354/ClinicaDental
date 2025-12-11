@@ -10,7 +10,7 @@ export const flujoConfirmar = addKeyword(EVENTS.ACTION)
     .addAction(async (ctx, { provider, flowDynamic, state }) => {
         try {
 
-            await responderConAnimacion(provider, ctx, "⏳ Creando tu cita dam un momento...");
+            await responderConAnimacion(provider, ctx, "⏳ Creando tu cita dame un momento...");
 
             const datos = await state.getMyState();
 
@@ -29,7 +29,6 @@ export const flujoConfirmar = addKeyword(EVENTS.ACTION)
                 const numeroCelular = ((ctx.key?.remoteJid || ctx.from).split('@')[0]).slice(3);
 
 
-                // ✅ CAMBIAR startTime/endTime a horaInicio/horaFin
                 const datosReserva = {
                     title: `Cita - ${datos.nombrePaciente}`,
                     startTime: datos.startTime.toISOString(),  

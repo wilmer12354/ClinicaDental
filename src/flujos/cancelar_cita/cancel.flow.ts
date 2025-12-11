@@ -164,11 +164,10 @@ export const flujoCancelar = addKeyword(EVENTS.ACTION)
                 if (result.success) {
                     await responderConAnimacion(provider, ctx, `✅ *Cita cancelada exitosamente*
 
-                        📅 ${formatearFechaHora(new Date(selectedAppointment.start))}
-                        📌 ${selectedAppointment.title}
+                    📅 ${formatearFechaHora(new Date(selectedAppointment.start))}
+                    📌 ${selectedAppointment.title}
 
-                        La cita ha sido eliminada de tu calendario.
-                        Recibirás una notificación de cancelación en tu correo.`);
+                    `);
 
                 } else {
                     console.error('❌ DEBUG - Error del servidor:', result.message);

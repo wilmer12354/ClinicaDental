@@ -3,18 +3,14 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import ffmpeg from 'fluent-ffmpeg';
 
-// Cargar variables de entorno
+
 dotenv.config();
 
 const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY
 });
 
-/**
- * Convierte un archivo de audio a formato MP3 compatible con Groq
- * @param inputPath - Ruta del archivo de entrada
- * @returns Ruta del archivo convertido
- */
+
 const convertirAudio_MP3 = async (inputPath: string): Promise<string> => {
     return new Promise((resolve, reject) => {
         const rutaSalida = inputPath.replace(/\.[^.]+$/, '.mp3');
@@ -39,45 +35,35 @@ const convertirAudio_MP3 = async (inputPath: string): Promise<string> => {
     });
 };
 
-/**
- * Transcribe un archivo de audio usando Groq Whisper
- * @param audioPath - Ruta del archivo de audio
- * @returns Texto transcrito
- */
+
 export const transcribeAudio = async (audioPath: string): Promise<string> => {
     let rutaConvertida: string | null = null;
     
     try {
         
-        
-        // Verificar que el archivo existe
         if (!fs.existsSync(audioPath)) {
             throw new Error(`El archivo no existe: ${audioPath}`);
         }
-        // Convertir el audio a MP3
         rutaConvertida = await convertirAudio_MP3(audioPath);
         
-        // Verificar que el archivo convertido existe
         if (!fs.existsSync(rutaConvertida)) {
             throw new Error('El archivo convertido no se generó correctamente');
         }
 
-        // Leer el archivo de audio convertido
+
         const audioFile = fs.createReadStream(rutaConvertida);
-        
-        // Realizar la transcripción
         
         const transcripcion = await groq.audio.transcriptions.create({
             file: audioFile,
             model: 'whisper-large-v3',
-            language: 'es', // Español
+            language: 'es', 
             response_format: 'json',
             temperature: 0.0
         });
 
        
         
-        // Limpiar archivo convertido
+        
         if (rutaConvertida && fs.existsSync(rutaConvertida)) {
             fs.unlinkSync(rutaConvertida);
             
@@ -88,7 +74,7 @@ export const transcribeAudio = async (audioPath: string): Promise<string> => {
     } catch (error) {
         console.error('❌ Error en transcripción:', error);
         
-        // Limpiar archivo convertido en caso de error
+        
         if (rutaConvertida && fs.existsSync(rutaConvertida)) {
             try {
                 fs.unlinkSync(rutaConvertida);
@@ -101,10 +87,7 @@ export const transcribeAudio = async (audioPath: string): Promise<string> => {
     }
 };
 
-/**
- * Limpia archivos temporales de audio
- * @param audioPath - Ruta del archivo a eliminar
- */
+
 export const limpiarAudio = (audioPath: string): void => {
     try {
         if (fs.existsSync(audioPath)) {
@@ -118,8 +101,6 @@ export const limpiarAudio = (audioPath: string): void => {
 
 /**
  * Genera una respuesta usando Groq
- * @param text - Texto transcrito
- * @returns Respuesta generada
  */
 export const generarRespuesta = async (text: string): Promise<string> => {
     try {

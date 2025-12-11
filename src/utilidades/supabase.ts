@@ -34,7 +34,7 @@ export const getDailyTransactions = async (date: Date = new Date()) => {
       .order('transaction_date', { ascending: false });
 
     if (error) {
-      throw new Error(`Error fetching transactions: ${error.message}`);
+      throw new Error(`Error Transaccion: ${error.message}`);
     }
 
     return data as Transaction[];
