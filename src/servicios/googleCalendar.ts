@@ -9,6 +9,7 @@ interface AvailabilityCheck {
   comprobarDisponibilidad: boolean;
   startTime: string;
   endTime: string;
+  sucursal?: string; // ID de sucursal seleccionada (opcional, para referencia)
 }
 
 interface CreateReservation {
@@ -37,6 +38,9 @@ interface NextAvailableSlot {
   start: string;
   end: string;
   formatted: string;
+  sucursal?: string;
+  direccion?: string;
+  horarioSucursal?: string;
 }
 
 interface AvailabilityResponse {
@@ -46,16 +50,24 @@ interface AvailabilityResponse {
 
 export const comprobarDisponibilidad = async (
   startTime: Date, 
-  endTime: Date
+  endTime: Date,
+  sucursal?: string
 ): Promise<AvailabilityResponse> => {
   try {
+    const payload: AvailabilityCheck = {
+      comprobarDisponibilidad: true,
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString()
+    };
+    
+    // Agregar sucursal si está disponible (para referencia, aunque findNextAvailableSlot buscará en todas)
+    if (sucursal) {
+      payload.sucursal = sucursal;
+    }
+
     const response = await axios.post(
       config.googleScriptUrl,
-      {
-        comprobarDisponibilidad: true,
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString()
-      } as AvailabilityCheck,
+      payload,
       {
         headers: { 'Content-Type': 'application/json' },
         timeout: 30000

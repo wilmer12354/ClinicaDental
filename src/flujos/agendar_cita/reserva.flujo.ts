@@ -50,6 +50,8 @@ interface EstadoReserva {
   minutoParcial?: number;
   sugerenciaStart?: string;
   sugerenciaEnd?: string;
+  sugerenciaSucursal?: string | null;
+  sugerenciaDireccion?: string | null;
   startTime?: Date;
   endTime?: Date;
   fechaOriginal?: string;
@@ -251,7 +253,9 @@ async function verificarDisponibilidad(
   try {
     await responderConAnimacion(provider, ctx, "Verificando disponibilidad, dame un momento...");
 
-    const disponibilidad = await comprobarDisponibilidad(startTime, endTime);
+    // Obtener sucursal seleccionada para pasarla como referencia
+    const sucursalId = await state.get('sucursal');
+    const disponibilidad = await comprobarDisponibilidad(startTime, endTime, sucursalId);
 
     if (disponibilidad.available) {
       await state.update({ step: 'disponible' });
@@ -269,25 +273,39 @@ async function verificarDisponibilidad(
     if (disponibilidad.nextAvailable) {
       const siguienteHorario = disponibilidad.nextAvailable;
 
+      // Guardar información de la sugerencia incluyendo sucursal
       await state.update({
         sugerenciaStart: siguienteHorario.start,
-        sugerenciaEnd: siguienteHorario.end
+        sugerenciaEnd: siguienteHorario.end,
+        sugerenciaSucursal: siguienteHorario.sucursal || null,
+        sugerenciaDireccion: siguienteHorario.direccion || null
       });
 
-      const mensaje = obtenerMensaje('cita', 'horario_ocupado');
+      // Construir mensaje con información de la sugerencia
+      const mensajeOcupado = obtenerMensaje('cita', 'horario_ocupado');
+      const fechaSugerida = formatearFechaHora(new Date(siguienteHorario.start));
       
+      let mensajeSugerencia = `${mensajeOcupado}\n\n`;
+      mensajeSugerencia += `📅 *Sugerencia de horario disponible:*\n`;
+      mensajeSugerencia += `⏰ ${fechaSugerida}\n`;
+      
+      if (siguienteHorario.sucursal) {
+        mensajeSugerencia += `🏢 ${siguienteHorario.sucursal}\n`;
+        if (siguienteHorario.direccion) {
+          mensajeSugerencia += `📍 ${siguienteHorario.direccion}\n`;
+        }
+      }
+      
+      mensajeSugerencia += `\n¿Te funciona este horario? (Responde "sí" o "no")`;
 
-      await responderConAnimacion(provider, ctx, mensaje);
+      await responderConAnimacion(provider, ctx, mensajeSugerencia);
       reiniciarTemporizador(ctx, gotoFlow, TIMEOUT_MS);
 
       // No hacer gotoFlow, simplemente retornar para que el flujo principal capture la respuesta
-   
+      
     }
 
-    // No hay horarios disponibles
-    const mensaje = `Por favor, intenta con una fecha diferente.`;
-
-    await responderConAnimacion(provider, ctx, mensaje);
+    
 
     // Si fallBackOrFlowDynamic es fallBack, usarlo; si no, reiniciar flujo
     if (typeof fallBackOrFlowDynamic === 'function') {
@@ -352,7 +370,7 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
         };
 
       await state.update({ sucursal: respuesta });
-      await responderConAnimacion(provider, ctx, `✅ Perfecto, has seleccionado la ${sucursalInfo.nombre}.`);
+
 
       // Mostrar recordatorio del horario de atención
       await responderConAnimacion(
@@ -455,9 +473,7 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
           return; // Continuar al siguiente addAnswer para capturar la fecha
         }
 
-        const mensaje = obtenerMensaje('cita', 'pedir_fecha');
-        // CASO 4: No viene con fecha ni hora, preguntar
-        await responderConAnimacion(provider, ctx, mensaje);
+        
         await iniciarTemporizador(ctx, gotoFlow, TIMEOUT_MS);
 
       } catch (error) {
@@ -512,11 +528,11 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
 
 
     // Verificar comando de cancelación
-    if (comandoCancelar(mensaje)) {
+    /*if (comandoCancelar(mensaje)) {
       await responderConAnimacion(provider, ctx, "Proceso cancelado, ¿en qué te puedo ayudar?");
       await state.clear();
       return;
-    }
+    }*/
 
     // Verificar estados pendientes
     const estadoActual: EstadoReserva = {
@@ -524,7 +540,9 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
       horaParcial: await state.get('horaParcial'),
       minutoParcial: await state.get('minutoParcial'),
       sugerenciaStart: await state.get('sugerenciaStart'),
-      sugerenciaEnd: await state.get('sugerenciaEnd')
+      sugerenciaEnd: await state.get('sugerenciaEnd'),
+      sugerenciaSucursal: await state.get('sugerenciaSucursal'),
+      sugerenciaDireccion: await state.get('sugerenciaDireccion')
     };
 
     // Caso 1: Confirmar sugerencia de horario
@@ -535,17 +553,38 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
 
       // Usuario acepta la sugerencia
       if (['si', 'sip', 'sí', 'ok', 'dale', 'aceptar', 'confirmar', 'esta bien', 'normal', 'si claro'].includes(respuesta)) {
-        await state.update({
+        // Si la sugerencia incluye una sucursal diferente, actualizarla
+        const updateData: any = {
           startTime: new Date(estadoActual.sugerenciaStart),
           endTime: new Date(estadoActual.sugerenciaEnd!),
           fechaOriginal: mensaje,
           fechaFormateada: formatearFechaHora(new Date(estadoActual.sugerenciaStart)),
           step: 'disponible',
           sugerenciaStart: null,
-          sugerenciaEnd: null
-        });
+          sugerenciaEnd: null,
+          sugerenciaSucursal: null,
+          sugerenciaDireccion: null
+        };
 
-        await responderConAnimacion(provider, ctx, `Perfecto! \n📅 ${formatearFechaHora(new Date(estadoActual.sugerenciaStart))} Sigamos...`);
+        // Si la sugerencia tiene una sucursal asociada, actualizarla en el estado
+        if (estadoActual.sugerenciaSucursal) {
+          // Determinar el ID de sucursal basado en el nombre
+          if (estadoActual.sugerenciaSucursal.includes('CENTRUM') || estadoActual.sugerenciaSucursal.includes('TORRE')) {
+            updateData.sucursal = '1';
+          } else if (estadoActual.sugerenciaSucursal.includes('BUENOS AIRES') || estadoActual.sugerenciaSucursal.includes('Buenos Aires')) {
+            updateData.sucursal = '2';
+          }
+        }
+
+        await state.update(updateData);
+
+        let mensajeConfirmacion = `Perfecto! \n📅 ${formatearFechaHora(new Date(estadoActual.sugerenciaStart))}`;
+        if (estadoActual.sugerenciaSucursal) {
+          mensajeConfirmacion += `\n🏢 ${estadoActual.sugerenciaSucursal}`;
+        }
+        mensajeConfirmacion += `\n\nSigamos...`;
+
+        await responderConAnimacion(provider, ctx, mensajeConfirmacion);
 
         await detenerTemporizador(ctx);
         return gotoFlow(flujoNombre);
@@ -555,7 +594,9 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
       if (['no', 'nop', 'nope', 'negativo', 'otra'].includes(respuesta)) {
         await state.update({
           sugerenciaStart: null,
-          sugerenciaEnd: null
+          sugerenciaEnd: null,
+          sugerenciaSucursal: null,
+          sugerenciaDireccion: null
         });
         const NUMERO_CELULAR = (ctx.key?.remoteJid || ctx.from).split('@')[0];
         const NOMBRE_PACIENTE = await instanciaAdaptadorMongo.obtenerNombrePaciente(NUMERO_CELULAR);
@@ -571,7 +612,9 @@ export const flujoReserva = addKeyword(EVENTS.ACTION)
       // Si no es ni sí ni no, limpiar sugerencia y continuar con parseo normal
       await state.update({
         sugerenciaStart: null,
-        sugerenciaEnd: null
+        sugerenciaEnd: null,
+        sugerenciaSucursal: null,
+        sugerenciaDireccion: null
       });
       
     }
